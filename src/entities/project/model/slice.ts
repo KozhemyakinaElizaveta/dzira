@@ -26,6 +26,8 @@ const MOCK_PROJECTS: Array<CurrentProject> = [
         date: '01.01.2024',
         last_name: 'Иванов',
         first_name: 'Иван',
+        priority: 'medium',
+        branch: '/main',
       },
       {
         id: '2',
@@ -41,6 +43,8 @@ const MOCK_PROJECTS: Array<CurrentProject> = [
         date: '01.04.2024',
         last_name: 'Иванов',
         first_name: 'Иван',
+        priority: 'medium',
+        branch: '/main',
       },
     ],
   },
@@ -68,6 +72,8 @@ const MOCK_PROJECTS: Array<CurrentProject> = [
         date: '01.01.2024',
         last_name: 'Иванов',
         first_name: 'Иван',
+        priority: 'medium',
+        branch: '/main',
       },
       {
         id: '22',
@@ -83,6 +89,8 @@ const MOCK_PROJECTS: Array<CurrentProject> = [
         date: '01.04.2024',
         last_name: 'Иванов',
         first_name: 'Иван',
+        priority: 'medium',
+        branch: '/main',
       },
     ],
   },
@@ -90,7 +98,8 @@ const MOCK_PROJECTS: Array<CurrentProject> = [
 
 const initialState: Project = {
   currentProject: MOCK_PROJECTS[0],
-  projects: MOCK_PROJECTS, 
+  projects: MOCK_PROJECTS,
+  currentTask: null, 
 }
 
 const projectSlice = createSlice({
@@ -122,13 +131,13 @@ const projectSlice = createSlice({
       state,
       action: PayloadAction<{ projectId: number; task: Task }>
     ) => {
-      const { projectId, task } = action.payload;
-      const project = state.projects.find((p) => p.id === projectId);
+      const { projectId, task } = action.payload
+      const project = state.projects.find((p) => p.id === projectId)
       if (project) {
-        project.tasks = [...(project.tasks || []), task];
+        project.tasks = [...(project.tasks || []), task]
 
         if (state.currentProject?.id === projectId) {
-          state.currentProject = project;
+          state.currentProject = project
         }
       }
     },
@@ -136,58 +145,68 @@ const projectSlice = createSlice({
       state,
       action: PayloadAction<{ projectId: number; newTitle: string }>
     ) => {
-      const { projectId, newTitle } = action.payload;
+      const { projectId, newTitle } = action.payload
 
-      const project = state.projects.find((p) => p.id === projectId);
+      const project = state.projects.find((p) => p.id === projectId)
       if (project) {
-        project.title = newTitle;
+        project.title = newTitle
       }
 
       if (state.currentProject?.id === projectId) {
-        state.currentProject = { ...state.currentProject, title: newTitle };
+        state.currentProject = { ...state.currentProject, title: newTitle }
       }
     },
     updateTaskInProject: (
       state,
       action: PayloadAction<{
-        projectId: number | null;
-        taskId: string; 
-        updates: Partial<Task>;
+        projectId: number | null
+        taskId: string
+        updates: Partial<Task>
       }>
     ) => {
-      const { projectId, taskId, updates } = action.payload;
+      const { projectId, taskId, updates } = action.payload
 
-      const project = state.projects.find((p) => p.id === projectId);
-      if (!project || !project.tasks) return;
+      const project = state.projects.find((p) => p.id === projectId)
+      if (!project || !project.tasks) return
 
-      const task = project.tasks.find((t) => t.id === taskId);
+      const task = project.tasks.find((t) => t.id === taskId)
       if (task) {
-        Object.assign(task, updates);
+        Object.assign(task, updates)
 
-        project.tasks = [...project.tasks];
+        project.tasks = [...project.tasks]
 
         if (state.currentProject?.id === projectId) {
-          state.currentProject = { ...project }; 
+          state.currentProject = { ...project }
+        }
+
+        if (state.currentTask && state.currentTask.id === taskId) {
+          state.currentTask = { ...task }
         }
       }
     },
     updateTaskSectionId: (state, action: PayloadAction<{ taskId: string; newSectionId: number }>) => {
-      const { taskId, newSectionId } = action.payload;
+      const { taskId, newSectionId } = action.payload
 
-      const currentProject = state.currentProject;
-      if (!currentProject || !currentProject.tasks) return;
+      const currentProject = state.currentProject
+      if (!currentProject || !currentProject.tasks) return
 
-      const task = currentProject.tasks.find((task) => task.id === taskId);
+      const task = currentProject.tasks.find((task) => task.id === taskId)
       if (task) {
+        task.section_id = newSectionId
 
-        task.section_id = newSectionId;
-
-        const projectInProjects = state.projects.find((p) => p.id === currentProject.id);
+        const projectInProjects = state.projects.find((p) => p.id === currentProject.id)
         if (projectInProjects) {
-          projectInProjects.tasks = [...currentProject.tasks];
-          state.currentProject = { ...currentProject }; 
+          projectInProjects.tasks = [...currentProject.tasks]
+          state.currentProject = { ...currentProject }
+        }
+
+        if (state.currentTask && state.currentTask.id === taskId) {
+          state.currentTask = { ...task }
         }
       }
+    },
+    setCurrentTask: (state, action: PayloadAction<Task | null>) => {
+      state.currentTask = action.payload
     },
   },
 })
@@ -199,7 +218,8 @@ export const {
   addTaskToProject,
   updateTaskInProject,
   updateTaskSectionId,
-  updateProjectTitle
+  updateProjectTitle,
+  setCurrentTask,
 } = projectSlice.actions
 
 export default projectSlice.reducer

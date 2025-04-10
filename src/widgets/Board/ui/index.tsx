@@ -8,38 +8,36 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  useDisclosure,
   useToast,
 } from '@chakra-ui/react'
-import TaskModal from 'widgets/TaskModal/ui'
 import { Settings } from 'shared/iconpack/Settings'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectCurrentProject } from 'entities/project/model/selectors'
 import { updateTaskSectionId } from 'entities/project/model/slice'
+import { Task } from 'entities/project/model/types'
 
-type BoardTask = {
-  id: string
-  name: string
-  project: string
-  number: number
-  branch?: string
-  description: string
-  tag: string
-  finished: boolean
-  date: string
-  last_name: string
-  first_name: string
-  section_id: number
-  priority?: string
-}
+// type BoardTask = {
+//   id: string
+//   name: string
+//   project: string
+//   number: number
+//   branch?: string
+//   description: string
+//   tag: string
+//   finished: boolean
+//   date: string
+//   last_name: string
+//   first_name: string
+//   section_id: number
+//   priority: string
+// }
 
 export type GroupedTasks = {
-  [sectionId: number]: BoardTask[]
+  [sectionId: number]: Task[]
 }
 
 export const Board = () => {
   const dispatch = useDispatch()
-  const { isOpen, onOpen, onClose } = useDisclosure()
   const currentProject = useSelector(selectCurrentProject)
   const [newSection, setNewSection] = useState('')
   const [sections, setSections] = useState<{ id: number; name: string }[]>([])
@@ -72,7 +70,9 @@ export const Board = () => {
             last_name: task.last_name,
             first_name: task.first_name,
             section_id: task.section_id,
-            priority: task.priority
+            priority: task.priority,
+            deadline: task.deadline,
+            tags: task.tags
           });
   
           return acc;
@@ -172,10 +172,6 @@ export const Board = () => {
 
   return (
     <>
-      <TaskModal 
-        isOpen={isOpen} 
-        onClose={onClose}
-      />
       <Flex w={'100%'} h={'100%'} py={'25px'} position="relative">
         <Menu>
           <MenuButton
@@ -211,7 +207,6 @@ export const Board = () => {
     tasks={tasks[section.id] || []}
     hasBorder
     onTaskDrop={handleTaskDrop}
-    openModal={onOpen}
   />
 ))}
       </Flex>

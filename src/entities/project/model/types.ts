@@ -12,7 +12,8 @@ export interface Task {
   date: string 
   last_name: string 
   first_name: string
-  priority?: string
+  priority: string
+  branch: string
 }
 
 export interface CurrentProject {
@@ -30,4 +31,5 @@ export interface CurrentProject {
 export interface Project {
   currentProject: CurrentProject
   projects: Array<CurrentProject>
+  currentTask: Task | null
 }

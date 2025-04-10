@@ -1,3 +1,4 @@
+import { useDisclosure } from "@chakra-ui/react"
 import React from "react"
 import { useMatch } from "react-router-dom"
 import { Delete, Plus } from "shared/iconpack"
@@ -5,6 +6,7 @@ import { Box, Button, Flex } from "shared/ui"
 import { CreateTaskModal } from "widgets/index"
 
 export const RightMenu = () => {
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const isHome = useMatch('/board')
     const isEdit = useMatch('/edit')
     const isProfile = useMatch('/profile')
@@ -13,9 +15,24 @@ export const RightMenu = () => {
 
     return (
         <>
+        <CreateTaskModal type="create" isOpen={isOpen} onClose={onClose}/>
         <Flex bgColor={'white'} p={'16px 16px 2px 16px'} borderRadius={'20px 20px 0 0'} boxShadow={ '0px 13px white'}>
         {(isHome || isIssues || isBoards) &&
-            <CreateTaskModal/>
+            <Button
+                    h={'35px'}
+                    fontWeight={600}
+                    fontSize="14px"
+                    color={'white'}
+                    borderRadius="12px"
+                    background={'blue.500'}
+                    leftIcon={<Plus strokeColor={'white'} />}
+                    _hover={{
+                      bgColor: 'blue.300',
+                    }}
+                    onClick={onOpen}
+                  >
+                    Задача
+                  </Button>
         }
         {isEdit &&
             <Flex align={'center'} gap={'20px'}>
