@@ -1,10 +1,7 @@
-import { Flex, Button, Input, Text } from 'shared/ui'
-import { ButtonsProjects } from 'shared/ui/menu-buttons/projects'
-import { getIcon } from '../../../shared/utils/getIcon'
-import { useDispatch, useSelector } from 'react-redux'
-import { setCurrentProject, addProject } from 'entities/project/model/slice'
-import { selectCurrentProject, selectAllProjects } from 'entities/project/model/selectors'
-import { Plus } from 'shared/iconpack'
+import { Flex, Button, Input } from 'shared/ui';
+import { ButtonsProjects } from 'shared/ui/menu-buttons/projects';
+import { getIcon } from '../../../shared/utils/getIcon';
+import { Plus } from 'shared/iconpack';
 import {
   IconButton,
   Modal,
@@ -15,84 +12,37 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
-  useToast,
-} from '@chakra-ui/react'
-import { Icon1 } from 'shared/utils/icons/icon1'
-import { Icon2 } from 'shared/utils/icons/icon2'
-import { Icon3 } from 'shared/utils/icons/icon3'
-import { Icon4 } from 'shared/utils/icons/icon4'
-import { Icon5 } from 'shared/utils/icons/icon5'
-import { useState } from 'react'
-import { CurrentProject } from 'entities/project/model/types'
-import { useMatch, useNavigate } from 'react-router-dom'
+} from '@chakra-ui/react';
+import { useState } from 'react';
+import { useMatch, useNavigate } from 'react-router-dom';
+import { useBoards } from '../lib';
+import { selectCurrentBoard } from 'entities/project/model/selectors';
+import { setCurrentBoard } from 'entities/project/model/slice';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const MenuProjects = () => {
-  const dispatch = useDispatch()
-  const toast = useToast()
-  const projects = useSelector(selectAllProjects) as CurrentProject[] 
-  const currentProject = useSelector(selectCurrentProject) as CurrentProject | null 
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const [projectName, setProjectName] = useState('')
-  const [selectedIcon, setSelectedIcon] = useState<number | null>(null)
-  const isBoards = useMatch('/boards')
-  const isIssues = useMatch('/issues')
+  const dispatch = useDispatch();
+  const {projects, createNewProject} = useBoards();
+  const currentProject = useSelector(selectCurrentBoard) || null;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [projectName, setProjectName] = useState('');
+  const isBoards = useMatch('/boards');
+  const isIssues = useMatch('/issues');
+  const isTeams = useMatch('/teams');
+  const isProfile = useMatch('/profile');
+  const navigate = useNavigate();
 
-    const navigate = useNavigate()
+  const getRandomIconIndex = () => Math.floor(Math.random() * 5); 
 
-  const handleIconClick = (iconIndex: number) => {
-    setSelectedIcon(iconIndex)
-  }
-
-  const handleCreateProject = () => {
-    if (selectedIcon === null) {
-      toast({
-        title: 'Ошибка',
-        description: 'Выберите иконку для проекта',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      })
-      return
-    }
-
-    if (projectName.trim()) {
-      const newProject: CurrentProject = {
-        id: Date.now(),
-        title: projectName,
-        icon: selectedIcon,
-      }
-
-      dispatch(
-        addProject({
-          title: newProject.title,
-          icon: newProject.icon,
-        })
-      )
-      toast({
-        title: 'Успех',
-        description: 'Проект создан',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      })
-      onClose()
-      setProjectName('')
-      setSelectedIcon(null)
-    } else {
-      toast({
-        title: 'Ошибка',
-        description: 'Необходимо имя проекта',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      })
-    }
-  }
+  const onCloseModal = () => {
+    setProjectName('');
+    onClose();
+  };
 
   return (
     <>
       <Flex w="100%" ml="85px" gap="14px" mb="6px">
-        <Modal isCentered isOpen={isOpen} onClose={onClose}>
+        <Modal isCentered isOpen={isOpen} onClose={onCloseModal}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Добавление проекта</ModalHeader>
@@ -104,55 +54,45 @@ export const MenuProjects = () => {
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
                 />
-                <Text fontSize="19px">Выберите иконку для проекта:</Text>
-                <Flex h="40px" w="100%" gap="10px">
-                  {[Icon1, Icon2, Icon3, Icon4, Icon5].map((Icon, index) => (
-                    <Flex
-                      key={index}
-                      justify="center"
-                      align="center"
-                      border={
-                        selectedIcon === index
-                          ? '2px solid #2452AD'
-                          : '2px solid transparent'
-                      }
-                      borderRadius="50px"
-                      cursor="pointer"
-                      onClick={() => handleIconClick(index)}
-                    >
-                      <Icon width="35" height="35" />
-                    </Flex>
-                  ))}
-                </Flex>
               </Flex>
             </ModalBody>
             <ModalFooter>
-              <Button mr={3} onClick={onClose} variant="transparent">
+              <Button mr={3} onClick={onCloseModal} variant="transparent">
                 Отмена
               </Button>
-              <Button onClick={handleCreateProject}>Создать</Button>
+              <Button onClick={() => {
+                  if (projectName.trim()) {
+                    createNewProject({ name: projectName }); 
+                    onCloseModal();
+                  }
+                }}>
+                  Создать
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
+
         <ButtonsProjects
-            title={'Все проекты'}
-            check={!!isBoards}
-            onClick={() => {
-              navigate('./boards')
-            }}
-          />
+          title={'Все проекты'}
+          check={!!isBoards}
+          onClick={() => {
+            navigate('/boards');
+          }}
+        />
+
         {projects.map((project) => (
           <ButtonsProjects
-            key={project.id} 
-            title={project.title}
-            Icon={getIcon(project.icon)}
-            check={currentProject?.title === project.title && !isBoards && !isIssues}
+            key={project.id}
+            title={project.name.length > 10 ? `${project.name.slice(0, 10)}...` : project.name}
+            Icon={getIcon(getRandomIconIndex())} 
+            check={currentProject?.name === project.name && !isBoards && !isIssues && !isTeams && !isProfile}
             onClick={() => {
-              dispatch(setCurrentProject(project))
-              navigate('./board')
+              dispatch(setCurrentBoard(project));
+              navigate(`/board/${project.id}`); 
             }}
           />
         ))}
+
         <IconButton
           onClick={onOpen}
           isRound={true}
@@ -164,10 +104,10 @@ export const MenuProjects = () => {
           _hover={{
             color: 'black',
             background: 'white',
-            boxShadow: ' 0px 0px 3px 2px rgba(208, 224, 255, 1)',
+            boxShadow: '0px 0px 3px 2px rgba(208, 224, 255, 1)',
           }}
         />
       </Flex>
     </>
-  )
-}
+  );
+};

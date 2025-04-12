@@ -7,7 +7,7 @@ import { MenuProjects, RightMenu } from 'widgets/index'
 
 const HomePage = lazy(() => import('./home'))
 const BoardsPage = lazy(() => import('./boards'))
-const EditPage = lazy(() => import('./edit'))
+const TeamsPage = lazy(() => import('./edit'))
 const ProfilePage = lazy(() => import('./profile'))
 const IssuesPage = lazy(() => import('./issues'))
 
@@ -46,7 +46,7 @@ export default function Routing() {
             }
           />
           <Route
-            path={'/board'}
+            path={'/board/:id'}
             element={
               <ContainerApp>
                 <HomePage />
@@ -62,10 +62,10 @@ export default function Routing() {
             }
           />
           <Route
-            path={'/edit'}
+            path={'/teams'}
             element={
               <ContainerApp>
-                <EditPage />
+                <TeamsPage />
               </ContainerApp>
             }
           />

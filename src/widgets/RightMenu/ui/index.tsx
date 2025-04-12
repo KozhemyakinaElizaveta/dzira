@@ -1,21 +1,22 @@
 import { useDisclosure } from "@chakra-ui/react"
 import React from "react"
 import { useMatch } from "react-router-dom"
-import { Delete, Plus } from "shared/iconpack"
+import { Plus } from "shared/iconpack"
 import { Box, Button, Flex } from "shared/ui"
 import { CreateTaskModal } from "widgets/index"
 
 export const RightMenu = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const isHome = useMatch('/board')
-    const isEdit = useMatch('/edit')
+    const isHome = useMatch('/board/:id')
+    const isTeams = useMatch('/teams')
     const isProfile = useMatch('/profile')
     const isIssues = useMatch('/issues')
     const isBoards = useMatch('/boards')
 
     return (
         <>
-        <CreateTaskModal type="create" isOpen={isOpen} onClose={onClose}/>
+        {isOpen &&
+        <CreateTaskModal type="create" isOpen={isOpen} onClose={onClose}/>}
         <Flex bgColor={'white'} p={'16px 16px 2px 16px'} borderRadius={'20px 20px 0 0'} boxShadow={ '0px 13px white'}>
         {(isHome || isIssues || isBoards) &&
             <Button
@@ -34,7 +35,7 @@ export const RightMenu = () => {
                     Задача
                   </Button>
         }
-        {isEdit &&
+        {isTeams &&
             <Flex align={'center'} gap={'20px'}>
                 <Button
                 onClick={() => {}}
@@ -49,17 +50,6 @@ export const RightMenu = () => {
                     })}
                 </Box>
                 Пригласить участника
-                </Button>
-                <Button
-                onClick={() => {}}
-                fontSize={'14px'}
-                variant={'delete'}
-                w={'160px'}
-                >
-                <Box mr="4px">
-                    {React.cloneElement(<Delete/>)}
-                </Box>
-                Удалить проект
                 </Button>
             </Flex>
         }
