@@ -1,38 +1,29 @@
-import { Calendar, Check } from 'shared/iconpack'; 
-import { Avatar, Box, Flex, Tag, Text, Timer } from '..';
-import { useDrag } from 'react-dnd';
-import { IconButton } from '@chakra-ui/react';
+import { Calendar } from 'shared/iconpack'
+import { Avatar, Box, Flex, Tag, Text, Timer } from '..'
+import { useDrag } from 'react-dnd'
 
 interface TaskCardProps {
-  project: string;
-  branch?: string;
-  number: number;
-  description: string;
-  tag: string;
-  date: string;
-  last_name: string;
-  first_name: string;
-  id: string;
-  name: string;
-  openModal: () => void;
-  finished: boolean
-  onCompleteChange?: (id: string, completed: boolean) => void; 
+  project: string
+  openModal: () => void
+  id: number
+  title: string
+  description: string
+  deadline?: string
+  priority: 'Low' | 'Medium' | 'High'
+  assignee: {
+    fullName: string
+  }
 }
 
 export const TaskCard = ({
   project,
-  number,
-  branch,
   description,
-  tag,
-  date,
-  last_name,
-  first_name,
   id,
-  name,
+  priority,
+  deadline,
+  title,
+  assignee,
   openModal,
-  finished,
-  onCompleteChange, 
 }: TaskCardProps) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'task',
@@ -40,13 +31,7 @@ export const TaskCard = ({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }));
-
-  const handleCompleteChange = () => {
-    if (onCompleteChange) {
-      onCompleteChange(id, !finished);
-    }
-  };
+  }))
 
   return (
     <Flex
@@ -65,46 +50,33 @@ export const TaskCard = ({
     >
       <Flex justifyContent={'space-between'} alignItems={'center'}>
         <Flex align={'center'} gap={'5px'} justify={'flex-start'}>
-        <Text color={'mallow.400'} fontWeight={400}>
-          {`${project} - ${number}`}
-        </Text>
-        <Box
-        cursor="pointer"
-        onClick={(e) => {
-          e.stopPropagation(); 
-          handleCompleteChange();
-        }}
-      >
-        <IconButton
-          aria-label="Mark as complete"
-          icon={<Check />}
-          color={finished ? 'green' : 'blue.400'} 
-          variant={'solid'} 
-          fontSize="16px"
-        />
-      </Box>
-        </Flex>
-        {branch && (
-          <Text fontWeight={400} fontSize={'12px'} color={'mallow.400'}>
-            {branch}
+          <Text color={'mallow.400'} fontWeight={400}>
+            {project}
           </Text>
-        )}
+        </Flex>
+        <Text fontWeight={400} fontSize={'12px'} color={'mallow.400'}>
+          {'/main'}
+        </Text>
       </Flex>
       <Text fontWeight={500} lineHeight={'20px'} fontSize={'17px'}>
-        {name}
+        {title}
       </Text>
       <Box>
         <Text fontWeight={600} lineHeight={'17.75px'}>
-          {`${description.slice(0, 110)}...`}
+          {description.length > 130
+            ? `${description.slice(0, 130)}...`
+            : description}
         </Text>
       </Box>
-      <Box h={'25px'}>{tag && <Tag tag={tag} />}</Box>
+      <Box h={'25px'}>
+        <Tag tag={priority} />
+      </Box>
       <Flex alignItems={'center'} justifyContent={'space-between'}>
         <Flex gap={'5px'} alignItems={'center'}>
           <Calendar />
-          {date ? (
+          {deadline ? (
             <Text fontSize={'12px'} fontWeight={400}>
-              {date}
+              {deadline}
             </Text>
           ) : (
             <Text
@@ -113,25 +85,23 @@ export const TaskCard = ({
               color={'blue.300'}
               _hover={{ color: 'blue.600' }}
               onClick={(event) => {
-                event.stopPropagation();
+                event.stopPropagation()
               }}
             >
               Указать
             </Text>
           )}
         </Flex>
-        <Timer taskId={id} />
-        {last_name && (
-          <Avatar
-            w={'28px'}
-            h={'28px'}
-            name={`${last_name} ${first_name}`}
-            size={'xs'}
-            bg={'mallow.300'}
-            color={'white'}
-          />
-        )}
+        <Timer taskId={id.toString()} />
+        <Avatar
+          w={'28px'}
+          h={'28px'}
+          name={assignee.fullName}
+          size={'xs'}
+          bg={'mallow.300'}
+          color={'white'}
+        />
       </Flex>
     </Flex>
-  );
-};
+  )
+}

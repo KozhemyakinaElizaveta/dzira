@@ -9,7 +9,7 @@ interface ContactInfoData {
   telegramm?: string | null
 }
 
-export const ContactInfo = ({email, phone, telegramm}: ContactInfoData) => {
+export const ContactInfo = ({ email, phone, telegramm }: ContactInfoData) => {
   const [data, setData] = useState<ContactInfoData>({
     email: email || '',
     phone: phone || '',
@@ -20,9 +20,9 @@ export const ContactInfo = ({email, phone, telegramm}: ContactInfoData) => {
     setData({
       email: email || '',
       phone: phone || '',
-      telegramm: telegramm || ''
-    });
-  }, [email, phone, telegramm]);
+      telegramm: telegramm || '',
+    })
+  }, [email, phone, telegramm])
 
   const [isEditingEmail, setIsEditingEmail] = useState(false)
   const [isEditingPhone, setIsEditingPhone] = useState(!data.phone)

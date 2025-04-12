@@ -6,7 +6,7 @@ function BoardMenu() {
   const navigate = useNavigate()
   const isLogin = useMatch('/login')
   const isIssues = useMatch('/issues')
-  const isEdit = useMatch('/edit')
+  const isTeams = useMatch('/teams')
   const isProfile = useMatch('/profile')
   if (isLogin) return null
   return (
@@ -27,12 +27,12 @@ function BoardMenu() {
             onClick={() => navigate('/issues')}
           />
         </Box>
-        <Box pt={isEdit ? '90px' : 0}>
+        <Box pt={isTeams ? '90px' : 0}>
           <ButtonsNavigations
-            title="Редактирование"
+            title="Команды"
             Icon={<Edit />}
-            check={!!isEdit}
-            onClick={() => navigate('/edit')}
+            check={!!isTeams}
+            onClick={() => navigate('/teams')}
           />
         </Box>
       </Flex>

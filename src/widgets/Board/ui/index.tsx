@@ -1,214 +1,124 @@
-import { Flex, Input } from 'shared/ui'
+import { Flex } from 'shared/ui'
 import { BoardColumn } from './BoardColumn'
 import { useEffect, useState } from 'react'
-import {
-  IconButton,
-  List,
-  ListItem,
-  Menu,
-  MenuButton,
-  MenuList,
-  useToast,
-} from '@chakra-ui/react'
-import { Settings } from 'shared/iconpack/Settings'
-import { useSelector, useDispatch } from 'react-redux'
-import { selectCurrentProject } from 'entities/project/model/selectors'
-import { updateTaskSectionId } from 'entities/project/model/slice'
-import { Task } from 'entities/project/model/types'
-
-// type BoardTask = {
-//   id: string
-//   name: string
-//   project: string
-//   number: number
-//   branch?: string
-//   description: string
-//   tag: string
-//   finished: boolean
-//   date: string
-//   last_name: string
-//   first_name: string
-//   section_id: number
-//   priority: string
-// }
+import { useToast } from '@chakra-ui/react'
+import { Task, useBoardTasks } from '../lib'
+import LoadingPage from 'pages/loading'
+import { useParams } from 'react-router-dom'
+import { setCurrentBoard } from 'entities/project/model/slice'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectAllBoards } from 'entities/project/model/selectors'
 
 export type GroupedTasks = {
-  [sectionId: number]: Task[]
+  [status: string]: Task[]
 }
 
 export const Board = () => {
-  const dispatch = useDispatch()
-  const currentProject = useSelector(selectCurrentProject)
-  const [newSection, setNewSection] = useState('')
-  const [sections, setSections] = useState<{ id: number; name: string }[]>([])
-  const [tasks, setTasks] = useState<GroupedTasks>({})
   const toast = useToast()
+  const dispatch = useDispatch()
+  const { id } = useParams()
+  const projects = useSelector(selectAllBoards)
 
   useEffect(() => {
-    if (currentProject) {
-      setSections(
-        currentProject.section_ids?.map((section) => ({
-          id: section.section_id,
-          name: section.name,
-        })) || []
-      );
-  
-      setTasks(
-        currentProject.tasks?.reduce((acc, task) => {
-          if (!acc[task.section_id]) acc[task.section_id] = [];
-  
-          acc[task.section_id].push({
-            id: String(task.id),
-            name: task.name,
-            project: currentProject.title,
-            number: typeof task.id === 'string' ? parseInt(task.id, 10) : task.id,
-            branch: '/main',
-            description: task.description || '',
-            tag: task.tags[0] || '',
-            finished: task.finished,
-            date: new Date(task.deadline).toLocaleDateString('ru-RU'),
-            last_name: task.last_name,
-            first_name: task.first_name,
-            section_id: task.section_id,
-            priority: task.priority,
-            deadline: task.deadline,
-            tags: task.tags
-          });
-  
-          return acc;
-        }, {} as GroupedTasks) || {}
-      );
-    }
-  }, [currentProject]);
-
-  const handleTaskDrop = (taskId: string, newStatus: string) => {
-    const numericNewStatus = parseInt(newStatus, 10);
-
-    const allTasks = Object.values(tasks).flat();
-    const taskToMove = allTasks.find((task) => task.id === taskId);
-  
-    if (!taskToMove) {
-      console.error(`Task with id ${taskId} not found`);
-      return;
-    }
-
-    if (!sections.some((section) => section.id === numericNewStatus)) {
-      toast({
-        title: 'Ошибка',
-        description: 'Неверная секция',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    setTasks((prevTasks) => {
-      const updatedTasks = { ...prevTasks };
-
-      Object.keys(updatedTasks).forEach((sectionId) => {
-        const numSectionId = parseInt(sectionId, 10);
-        updatedTasks[numSectionId] = updatedTasks[numSectionId].filter(
-          (task) => task.id !== taskId
-        );
-      });
-
-      const updatedTask = {
-        ...taskToMove,
-        section_id: numericNewStatus,
-      };
-  
-      updatedTasks[numericNewStatus] = [
-        ...(updatedTasks[numericNewStatus] || []),
-        updatedTask,
-      ];
-  
-      return updatedTasks;
-    });
-
-    dispatch(
-      updateTaskSectionId({
-        taskId: taskId,
-        newSectionId: numericNewStatus,
-      })
-    );
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewSection(e.target.value)
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && newSection.trim() !== '') {
-      const sectionName = newSection.trim()
-
-      if (!sections.some(s => s.name === sectionName)) {
-        const newSectionId = sections.length > 0 
-          ? Math.max(...sections.map(s => s.id)) + 1 
-          : 1
-
-        setSections([...sections, { id: newSectionId, name: sectionName }])
-        setTasks(prev => ({ ...prev, [newSectionId]: [] }))
-        setNewSection('')
-        
-        toast({
-          title: 'Успешно',
-          description: `Секция "${sectionName}" добавлена`,
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
+    if (id && projects.length > 0) {
+      const project = projects.find((p) => String(p.id) === id)
+      if (project) {
+        dispatch(setCurrentBoard(project))
       } else {
         toast({
-          title: 'Дублирование секции',
-          description: 'Такая секция уже существует',
-          status: 'warning',
+          title: 'Ошибка',
+          description: 'Проект не найден',
+          status: 'error',
           duration: 3000,
           isClosable: true,
         })
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, projects])
+
+  const { tasks, isLoading, updateTaskStatus } = useBoardTasks()
+
+  const [groupedTasks, setGroupedTasks] = useState<GroupedTasks>({
+    Backlog: [],
+    InProgress: [],
+    Done: [],
+  })
+
+  useEffect(() => {
+    if (tasks) {
+      const grouped = tasks.reduce(
+        (acc, task) => {
+          acc[task.status].push(task)
+          return acc
+        },
+        { Backlog: [], InProgress: [], Done: [] } as GroupedTasks
+      )
+      setGroupedTasks(grouped)
+    }
+  }, [tasks])
+
+  const handleTaskDrop = (taskId: string, newStatus: string) => {
+    const validStatuses = ['Backlog', 'InProgress', 'Done']
+
+    if (!validStatuses.includes(newStatus)) {
+      toast({
+        title: 'Ошибка',
+        description: 'Неверный статус',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+      return
+    }
+
+    updateTaskStatus(
+      parseInt(taskId, 10),
+      newStatus as 'Backlog' | 'InProgress' | 'Done'
+    )
+
+    setGroupedTasks((prevTasks) => {
+      const updatedTasks = { ...prevTasks }
+
+      Object.keys(updatedTasks).forEach((status) => {
+        updatedTasks[status] = updatedTasks[status].filter(
+          (task) => task.id !== parseInt(taskId, 10)
+        )
+      })
+
+      updatedTasks[newStatus].push(
+        tasks.find((task) => task.id === parseInt(taskId, 10))!
+      )
+
+      return updatedTasks
+    })
   }
 
   return (
     <>
-      <Flex w={'100%'} h={'100%'} py={'25px'} position="relative">
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            icon={<Settings />}
-            aria-label="Settings"
-            colorScheme="transparent"
-            position="absolute"
-            top="4"
-            right="2"
-          />
-          <MenuList p={4}>
-            <Input
-              placeholder="Добавить секцию"
-              value={newSection}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyPress}
-              mb={2}
-            />
-            <List spacing={2}>
-              {sections.map((section) => (
-                <ListItem key={section.id}>{section.name}</ListItem>
-              ))}
-            </List>
-          </MenuList>
-        </Menu>
-
-        {sections.map((section) => (
-  <BoardColumn
-    key={section.id}
-    title={String(section.id)}
-    titleRus={section.name}
-    tasks={tasks[section.id] || []}
-    hasBorder
-    onTaskDrop={handleTaskDrop}
-  />
-))}
+      <Flex w={'100%'} h={'100%'} py={'10px'} position="relative">
+        {!isLoading ? (
+          <>
+            {['Backlog', 'InProgress', 'Done'].map((status) => (
+              <BoardColumn
+                key={status}
+                title={status}
+                titleRus={
+                  status === 'Backlog'
+                    ? 'Бэклог'
+                    : status === 'InProgress'
+                      ? 'В процессе'
+                      : 'Готово'
+                }
+                tasks={groupedTasks[status]}
+                hasBorder
+                onTaskDrop={(taskId) => handleTaskDrop(taskId, status)}
+              />
+            ))}
+          </>
+        ) : (
+          <LoadingPage />
+        )}
       </Flex>
     </>
   )
