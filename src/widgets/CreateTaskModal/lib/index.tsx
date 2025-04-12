@@ -1,111 +1,111 @@
-import { useFormik } from 'formik';
-import { UseDisclosureReturn, useToast } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createTask, updateTask } from 'entities/task/api'; 
-import { selectCurrentBoard } from 'entities/project/model/selectors';
-import { getProjects, getUsers } from 'entities/project/api';
-import { User } from 'entities/project/model/types';
-import { GetBoardsResponse } from 'widgets/Boards/lib';
-import { useBoardTasks } from 'widgets/Board/lib';
-import { useNavigate } from 'react-router-dom';
-import { setCurrentBoard } from 'entities/project/model/slice';
+import { useFormik } from 'formik'
+import { UseDisclosureReturn, useToast } from '@chakra-ui/react'
+import { useEffect, useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { createTask, updateTask } from 'entities/task/api'
+import { selectCurrentBoard } from 'entities/project/model/selectors'
+import { getProjects, getUsers } from 'entities/project/api'
+import { User } from 'entities/project/model/types'
+import { GetBoardsResponse } from 'widgets/Boards/lib'
+import { useBoardTasks } from 'widgets/Board/lib'
+import { useNavigate } from 'react-router-dom'
+import { setCurrentBoard } from 'entities/project/model/slice'
 
 export interface CreateTaskRequest {
-  assigneeId: number;
-  boardId: number;
-  description: string;
-  priority?: "Low" | "Medium" | "High";
-  title: string;
-  status: "Backlog" | "InProgress" | "Done";
+  assigneeId: number
+  boardId: number
+  description: string
+  priority?: 'Low' | 'Medium' | 'High'
+  title: string
+  status: 'Backlog' | 'InProgress' | 'Done'
 }
 
 export interface UpdateTaskRequest extends CreateTaskRequest {
-  taskId: number;
+  taskId: number
 }
 
 export interface FormValues extends CreateTaskRequest {
-  deadline?: string; 
-  errorOccurred?: boolean; 
+  deadline?: string
+  errorOccurred?: boolean
 }
 
 export const useCreateForm = (
-  type: 'create' | 'edit', 
+  type: 'create' | 'edit',
   onClose: UseDisclosureReturn['onClose'],
-  taskId?: number,
+  taskId?: number
 ) => {
-  const toast = useToast();
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-  const currentBoard = useSelector(selectCurrentBoard);
-  const [users, setUsers] = useState<User[]>([]); 
-  const { setUpdate } = useBoardTasks();
+  const toast = useToast()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const currentBoard = useSelector(selectCurrentBoard)
+  const [users, setUsers] = useState<User[]>([])
+  const { setUpdate } = useBoardTasks()
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await getUsers();
-        setUsers(response.data.data); 
+        const response = await getUsers()
+        setUsers(response.data.data)
       } catch (error) {
-        console.error('Ошибка при получении пользователей:', error);
+        console.error('Ошибка при получении пользователей:', error)
       }
-    };
+    }
 
-    fetchUsers();
-  }, []);
+    fetchUsers()
+  }, [])
 
-    const [projectsData, setProjectsData] = useState<GetBoardsResponse[]>([]); 
-  
-    useEffect(() => {
-      getProjects()
-        .then((response) => {
-          setProjectsData(response.data.data);
+  const [projectsData, setProjectsData] = useState<GetBoardsResponse[]>([])
+
+  useEffect(() => {
+    getProjects()
+      .then((response) => {
+        setProjectsData(response.data.data)
+      })
+      .catch(() => {
+        toast({
+          position: 'bottom-right',
+          title: 'Ошибка',
+          description: 'Не удалось получить проекты',
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+          variant: 'top-accent',
         })
-        .catch(() => {
-          toast({
-            position: "bottom-right",
-            title: "Ошибка",
-            description: "Не удалось получить проекты",
-            status: "error",
-            duration: 9000,
-            isClosable: true,
-            variant: "top-accent",
-          });
-        })
+      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); 
-  
-    const data = useMemo(() => {
-      if (!projectsData || projectsData.length === 0) {
-        return {
-          totalProjects: 0,
-          projects: [],
-        };
-      }
+  }, [])
+
+  const data = useMemo(() => {
+    if (!projectsData || projectsData.length === 0) {
       return {
-        totalProjects: projectsData.length,
-        projects: projectsData.map((project) => ({
-          id: project.id,
-          name: project.name,
-          description: project.description,
-          taskCount: project.taskCount,
-        })),
-      };
-    }, [projectsData]);
+        totalProjects: 0,
+        projects: [],
+      }
+    }
+    return {
+      totalProjects: projectsData.length,
+      projects: projectsData.map((project) => ({
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        taskCount: project.taskCount,
+      })),
+    }
+  }, [projectsData])
 
   const validate = (values: FormValues) => {
-    const errors: Partial<FormValues> = {};
+    const errors: Partial<FormValues> = {}
 
     if (!values.title) {
-      errors.title = 'Название задачи обязательно';
+      errors.title = 'Название задачи обязательно'
     }
 
     if (!values.description) {
-      errors.description = 'Описание задачи обязательно';
+      errors.description = 'Описание задачи обязательно'
     }
 
-    return errors;
-  };
+    return errors
+  }
 
   const submitCreate = (values: FormValues) => {
     if (!currentBoard) {
@@ -117,8 +117,8 @@ export const useCreateForm = (
         duration: 5000,
         isClosable: true,
         variant: 'top-accent',
-      });
-      return;
+      })
+      return
     }
 
     const options: CreateTaskRequest = {
@@ -127,17 +127,19 @@ export const useCreateForm = (
       description: values.description,
       title: values.title,
       priority: values.priority,
-      status: 'Backlog'
-    };
+      status: 'Backlog',
+    }
 
     createTask(options)
       .then(({ status }) => {
         if (status === 200) {
-          const selectedProject = projectsData.find((p) => p.id === formik.values.boardId);
+          const selectedProject = projectsData.find(
+            (p) => p.id === formik.values.boardId
+          )
           if (selectedProject) {
-            dispatch(setCurrentBoard(selectedProject));
-            navigate(`/board/${formik.values.boardId}`);
-          } 
+            dispatch(setCurrentBoard(selectedProject))
+            navigate(`/board/${formik.values.boardId}`)
+          }
           setUpdate(true)
           toast({
             position: 'bottom-right',
@@ -147,9 +149,9 @@ export const useCreateForm = (
             duration: 5000,
             isClosable: true,
             variant: 'top-accent',
-          });
+          })
           onClose()
-          formik.resetForm();
+          formik.resetForm()
         }
       })
       .catch(() => {
@@ -161,9 +163,9 @@ export const useCreateForm = (
           duration: 5000,
           isClosable: true,
           variant: 'top-accent',
-        });
-      });
-  };
+        })
+      })
+  }
 
   const submitUpdate = (values: FormValues) => {
     if (!taskId) {
@@ -175,8 +177,8 @@ export const useCreateForm = (
         duration: 5000,
         isClosable: true,
         variant: 'top-accent',
-      });
-      return;
+      })
+      return
     }
 
     const options: UpdateTaskRequest = {
@@ -185,18 +187,20 @@ export const useCreateForm = (
       description: values.description,
       title: values.title,
       priority: values.priority,
-      taskId: taskId, 
-      status: values.status
-    };
+      taskId: taskId,
+      status: values.status,
+    }
 
     updateTask(taskId, options)
       .then(({ status }) => {
         if (status === 200) {
-          const selectedProject = projectsData.find((p) => p.id === formik.values.boardId);
+          const selectedProject = projectsData.find(
+            (p) => p.id === formik.values.boardId
+          )
           if (selectedProject) {
-            dispatch(setCurrentBoard(selectedProject));
-            navigate(`/board/${formik.values.boardId}`);
-          } 
+            dispatch(setCurrentBoard(selectedProject))
+            navigate(`/board/${formik.values.boardId}`)
+          }
           setUpdate(true)
           toast({
             position: 'bottom-right',
@@ -206,9 +210,9 @@ export const useCreateForm = (
             duration: 5000,
             isClosable: true,
             variant: 'top-accent',
-          });
+          })
           onClose()
-          formik.resetForm();
+          formik.resetForm()
         }
       })
       .catch(() => {
@@ -220,30 +224,30 @@ export const useCreateForm = (
           duration: 5000,
           isClosable: true,
           variant: 'top-accent',
-        });
-      });
-  };
+        })
+      })
+  }
 
   const formik = useFormik<FormValues>({
     initialValues: {
       title: '',
       description: '',
-      assigneeId: -1, 
-      boardId: currentBoard?.id || -1, 
+      assigneeId: -1,
+      boardId: currentBoard?.id || -1,
       priority: undefined,
       deadline: '',
       errorOccurred: false,
-      status: 'Backlog'
+      status: 'Backlog',
     },
     validate,
     onSubmit: (values) => {
       if (type === 'create') {
-        submitCreate(values);
+        submitCreate(values)
       } else if (type === 'edit' && taskId) {
-        submitUpdate(values);
+        submitUpdate(values)
       }
     },
-  });
+  })
 
-  return { formik, users, ...data };
-};
+  return { formik, users, ...data }
+}

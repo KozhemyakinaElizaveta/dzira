@@ -1,7 +1,7 @@
-import { Flex, Button, Input } from 'shared/ui';
-import { ButtonsProjects } from 'shared/ui/menu-buttons/projects';
-import { getIcon } from '../../../shared/utils/getIcon';
-import { Plus } from 'shared/iconpack';
+import { Flex, Button, Input } from 'shared/ui'
+import { ButtonsProjects } from 'shared/ui/menu-buttons/projects'
+import { getIcon } from '../../../shared/utils/getIcon'
+import { Plus } from 'shared/iconpack'
 import {
   IconButton,
   Modal,
@@ -12,32 +12,32 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
-} from '@chakra-ui/react';
-import { useState } from 'react';
-import { useMatch, useNavigate } from 'react-router-dom';
-import { useBoards } from '../lib';
-import { selectCurrentBoard } from 'entities/project/model/selectors';
-import { setCurrentBoard } from 'entities/project/model/slice';
-import { useDispatch, useSelector } from 'react-redux';
+} from '@chakra-ui/react'
+import { useState } from 'react'
+import { useMatch, useNavigate } from 'react-router-dom'
+import { useBoards } from '../lib'
+import { selectCurrentBoard } from 'entities/project/model/selectors'
+import { setCurrentBoard } from 'entities/project/model/slice'
+import { useDispatch, useSelector } from 'react-redux'
 
 export const MenuProjects = () => {
-  const dispatch = useDispatch();
-  const {projects, createNewProject} = useBoards();
-  const currentProject = useSelector(selectCurrentBoard) || null;
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [projectName, setProjectName] = useState('');
-  const isBoards = useMatch('/boards');
-  const isIssues = useMatch('/issues');
-  const isTeams = useMatch('/teams');
-  const isProfile = useMatch('/profile');
-  const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const { projects, createNewProject } = useBoards()
+  const currentProject = useSelector(selectCurrentBoard) || null
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [projectName, setProjectName] = useState('')
+  const isBoards = useMatch('/boards')
+  const isIssues = useMatch('/issues')
+  const isTeams = useMatch('/teams')
+  const isProfile = useMatch('/profile')
+  const navigate = useNavigate()
 
-  const getRandomIconIndex = () => Math.floor(Math.random() * 5); 
+  const getRandomIconIndex = () => Math.floor(Math.random() * 5)
 
   const onCloseModal = () => {
-    setProjectName('');
-    onClose();
-  };
+    setProjectName('')
+    onClose()
+  }
 
   return (
     <>
@@ -60,13 +60,15 @@ export const MenuProjects = () => {
               <Button mr={3} onClick={onCloseModal} variant="transparent">
                 Отмена
               </Button>
-              <Button onClick={() => {
+              <Button
+                onClick={() => {
                   if (projectName.trim()) {
-                    createNewProject({ name: projectName }); 
-                    onCloseModal();
+                    createNewProject({ name: projectName })
+                    onCloseModal()
                   }
-                }}>
-                  Создать
+                }}
+              >
+                Создать
               </Button>
             </ModalFooter>
           </ModalContent>
@@ -76,19 +78,29 @@ export const MenuProjects = () => {
           title={'Все проекты'}
           check={!!isBoards}
           onClick={() => {
-            navigate('/boards');
+            navigate('/boards')
           }}
         />
 
         {projects.map((project) => (
           <ButtonsProjects
             key={project.id}
-            title={project.name.length > 10 ? `${project.name.slice(0, 10)}...` : project.name}
-            Icon={getIcon(getRandomIconIndex())} 
-            check={currentProject?.name === project.name && !isBoards && !isIssues && !isTeams && !isProfile}
+            title={
+              project.name.length > 10
+                ? `${project.name.slice(0, 10)}...`
+                : project.name
+            }
+            Icon={getIcon(getRandomIconIndex())}
+            check={
+              currentProject?.name === project.name &&
+              !isBoards &&
+              !isIssues &&
+              !isTeams &&
+              !isProfile
+            }
             onClick={() => {
-              dispatch(setCurrentBoard(project));
-              navigate(`/board/${project.id}`); 
+              dispatch(setCurrentBoard(project))
+              navigate(`/board/${project.id}`)
             }}
           />
         ))}
@@ -109,5 +121,5 @@ export const MenuProjects = () => {
         />
       </Flex>
     </>
-  );
-};
+  )
+}

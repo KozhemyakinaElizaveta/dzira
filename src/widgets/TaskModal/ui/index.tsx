@@ -174,17 +174,17 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     borderRadius="8px"
                     background={'white'}
                     border={'1px dashed #6D9AF2'}
-                    leftIcon={<Plus strokeColor={'#6D9AF2'}/>}
+                    leftIcon={<Plus strokeColor={'#6D9AF2'} />}
                     _hover={{
                       borderColor: 'blue.600',
-                      color: 'blue.600'
+                      color: 'blue.600',
                     }}
                     onClick={() => {}}
                   >
                     Добавить тег
                   </Button>
                 </Flex>
-                <Timer taskId={data.id}/>
+                <Timer taskId={data.id} />
               </Flex>
               <Flex
                 flexDir={'column'}
@@ -248,14 +248,8 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 посмотреть вложения
               </Text>
             </Flex>
-            <Button
-            onClick={() => {}}
-            fontSize={'14px'}
-            variant={'delete'}
-            >
-              <Box mr="4px">
-                {React.cloneElement(<Delete/>)}
-              </Box>
+            <Button onClick={() => {}} fontSize={'14px'} variant={'delete'}>
+              <Box mr="4px">{React.cloneElement(<Delete />)}</Box>
               Удалить
             </Button>
           </Flex>

@@ -1,18 +1,18 @@
-import { Flex, Text, useDisclosure } from '@chakra-ui/react';
-import { selectCurrentBoard } from 'entities/project/model/selectors';
-import { useDrop } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
-import { TaskCard } from 'shared/ui';
-import { CreateTaskModal } from 'widgets/index';
-import { Task } from '../lib';
-import { setCurrentTask } from 'entities/project/model/slice';
+import { Flex, Text, useDisclosure } from '@chakra-ui/react'
+import { selectCurrentBoard } from 'entities/project/model/selectors'
+import { useDrop } from 'react-dnd'
+import { useDispatch, useSelector } from 'react-redux'
+import { TaskCard } from 'shared/ui'
+import { CreateTaskModal } from 'widgets/index'
+import { Task } from '../lib'
+import { setCurrentTask } from 'entities/project/model/slice'
 
 interface BoardColumnProps {
-  title: string; 
-  titleRus: string; 
-  tasks: Array<Task>; 
-  hasBorder?: boolean; 
-  onTaskDrop: (taskId: string, newStatus: string) => void; 
+  title: string
+  titleRus: string
+  tasks: Array<Task>
+  hasBorder?: boolean
+  onTaskDrop: (taskId: string, newStatus: string) => void
 }
 
 export const BoardColumn = ({
@@ -23,26 +23,26 @@ export const BoardColumn = ({
   onTaskDrop,
 }: BoardColumnProps) => {
   const [, drop] = useDrop(() => ({
-    accept: 'task', 
+    accept: 'task',
     drop: (item: { id: string }) => {
-      onTaskDrop(item.id, title);
+      onTaskDrop(item.id, title)
     },
-  }));
+  }))
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const currentProject = useSelector(selectCurrentBoard);
-  const dispatch = useDispatch();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const currentProject = useSelector(selectCurrentBoard)
+  const dispatch = useDispatch()
 
   return (
     <>
-      {isOpen &&
-      <CreateTaskModal
-        type="edit"
-        isOpen={isOpen}
-        onClose={onClose}
-        project={currentProject}
-      />
-      }
+      {isOpen && (
+        <CreateTaskModal
+          type="edit"
+          isOpen={isOpen}
+          onClose={onClose}
+          project={currentProject}
+        />
+      )}
 
       <Flex
         ref={drop}
@@ -71,13 +71,13 @@ export const BoardColumn = ({
                 project={currentProject?.name || ''}
                 {...task}
                 openModal={() => {
-                  dispatch(setCurrentTask(task));
-                  onOpen();
+                  dispatch(setCurrentTask(task))
+                  onOpen()
                 }}
               />
             ))}
         </Flex>
       </Flex>
     </>
-  );
-};
+  )
+}

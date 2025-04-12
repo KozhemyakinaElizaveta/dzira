@@ -1,10 +1,13 @@
 import { SVGProps } from 'react'
 
 interface ProfileProps extends SVGProps<SVGSVGElement> {
-    strokeColor?: string; 
-  }
+  strokeColor?: string
+}
 
-export const Profile = ({ strokeColor='#161F29', ...props}: ProfileProps) => (
+export const Profile = ({
+  strokeColor = '#161F29',
+  ...props
+}: ProfileProps) => (
   <svg
     width="16"
     height="20"

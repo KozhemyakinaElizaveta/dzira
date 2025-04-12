@@ -14,30 +14,32 @@ const IssuesPage = lazy(() => import('./issues'))
 export default function Routing() {
   return (
     <DefaultLayout>
-        <Flex
-          w="100%"
-          h="125px"
-          flexDirection="column"
-          justifyContent="space-around"
-        >
-          <Flex ml="30px" align={'center'}>
-            <LoginLogo />
-            <Text fontSize={'32px'} fontWeight={800}>DZIRA</Text>
-          </Flex>
-          <Flex>
-            <MenuProjects />
-            <Flex justifySelf={'flex-end'} mr="30px">
-              <RightMenu />
-            </Flex>
+      <Flex
+        w="100%"
+        h="125px"
+        flexDirection="column"
+        justifyContent="space-around"
+      >
+        <Flex ml="30px" align={'center'}>
+          <LoginLogo />
+          <Text fontSize={'32px'} fontWeight={800}>
+            DZIRA
+          </Text>
+        </Flex>
+        <Flex>
+          <MenuProjects />
+          <Flex justifySelf={'flex-end'} mr="30px">
+            <RightMenu />
           </Flex>
         </Flex>
+      </Flex>
       <Flex w="100vw" h="100%">
-          <Flex h="100%" w="85px">
-            <BoardMenu />
-          </Flex>
+        <Flex h="100%" w="85px">
+          <BoardMenu />
+        </Flex>
         <Routes>
-        <Route path="/" element={<Navigate to="/boards" />} />
-        <Route
+          <Route path="/" element={<Navigate to="/boards" />} />
+          <Route
             path={'/boards'}
             element={
               <ContainerApp>
@@ -50,7 +52,7 @@ export default function Routing() {
             element={
               <ContainerApp>
                 <HomePage />
-                </ContainerApp>
+              </ContainerApp>
             }
           />
           <Route
@@ -58,7 +60,7 @@ export default function Routing() {
             element={
               <ContainerApp>
                 <IssuesPage />
-                </ContainerApp>
+              </ContainerApp>
             }
           />
           <Route
@@ -74,7 +76,7 @@ export default function Routing() {
             element={
               <ContainerApp>
                 <ProfilePage />
-                </ContainerApp>
+              </ContainerApp>
             }
           />
           <Route

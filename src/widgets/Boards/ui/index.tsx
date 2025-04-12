@@ -1,11 +1,11 @@
-import { Flex, Text } from '@chakra-ui/react';
-import { useBoards } from '../lib';
-import { useNavigate } from 'react-router-dom';
-import LoadingPage from 'pages/loading';
+import { Flex, Text } from '@chakra-ui/react'
+import { useBoards } from '../lib'
+import { useNavigate } from 'react-router-dom'
+import LoadingPage from 'pages/loading'
 
 export const Boards = () => {
-  const { projects, isLoading } = useBoards();
-  const navigate = useNavigate();
+  const { projects, isLoading } = useBoards()
+  const navigate = useNavigate()
 
   return (
     <Flex flexDirection="column" w="100%" h="100%" gap="20px">
@@ -14,7 +14,7 @@ export const Boards = () => {
       </Text>
 
       {isLoading ? (
-        <LoadingPage/>
+        <LoadingPage />
       ) : (
         <Flex
           flexDirection="column"
@@ -36,16 +36,16 @@ export const Boards = () => {
                 justifyContent={'space-between'}
               >
                 <Text fontSize="16px" fontWeight={500}>
-                  {project.name} 
+                  {project.name}
                 </Text>
                 <Text
                   cursor={'pointer'}
                   onClick={() => {
                     if (project) {
-                      navigate(`/board/${project.id}`);
+                      navigate(`/board/${project.id}`)
                     }
                   }}
-                  _hover={{color: 'blue.500'}}
+                  _hover={{ color: 'blue.500' }}
                 >
                   Перейти на доску
                 </Text>
@@ -59,5 +59,5 @@ export const Boards = () => {
         </Flex>
       )}
     </Flex>
-  );
-};
+  )
+}

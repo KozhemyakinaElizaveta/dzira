@@ -1,5 +1,5 @@
-import { Flex, Button, Input, Text } from 'shared/ui';
-import { Calendar, Plus } from 'shared/iconpack';
+import { Flex, Button, Input, Text } from 'shared/ui'
+import { Calendar, Plus } from 'shared/iconpack'
 import {
   chakra,
   FormControl,
@@ -14,14 +14,17 @@ import {
   ModalHeader,
   ModalOverlay,
   UseDisclosureReturn,
-} from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { useMatch, useNavigate, useParams } from 'react-router-dom';
-import { useCreateForm } from '../lib';
-import { Board } from 'entities/project/model/types';
-import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentBoard } from 'entities/project/model/slice';
-import { selectCurrentBoard, selectCurrentTask } from 'entities/project/model/selectors';
+} from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
+import { useMatch, useNavigate, useParams } from 'react-router-dom'
+import { useCreateForm } from '../lib'
+import { Board } from 'entities/project/model/types'
+import { useDispatch, useSelector } from 'react-redux'
+import { setCurrentBoard } from 'entities/project/model/slice'
+import {
+  selectCurrentBoard,
+  selectCurrentTask,
+} from 'entities/project/model/selectors'
 
 export const CreateTaskModal = ({
   type,
@@ -29,19 +32,19 @@ export const CreateTaskModal = ({
   isOpen,
   project,
 }: {
-  type: 'create' | 'edit';
-  isOpen: UseDisclosureReturn['isOpen'];
-  onClose: UseDisclosureReturn['onClose'];
-  project?: Board | null;
+  type: 'create' | 'edit'
+  isOpen: UseDisclosureReturn['isOpen']
+  onClose: UseDisclosureReturn['onClose']
+  project?: Board | null
 }) => {
-  const [isDeadline, setDeadline] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const isIssues = useMatch('/issues');
+  const [isDeadline, setDeadline] = useState(false)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const isIssues = useMatch('/issues')
 
-  const { formik, users, projects } = useCreateForm(type, onClose, project?.id);
-  const currentTask = useSelector(selectCurrentTask);
-  const currentProject = useSelector(selectCurrentBoard);
+  const { formik, users, projects } = useCreateForm(type, onClose, project?.id)
+  const currentTask = useSelector(selectCurrentTask)
+  const currentProject = useSelector(selectCurrentBoard)
 
   useEffect(() => {
     if (type === 'edit' && currentTask && currentProject) {
@@ -51,42 +54,44 @@ export const CreateTaskModal = ({
         boardId: currentProject.id,
         assigneeId: currentTask.assignee.id,
         priority: currentTask.priority,
-        status: currentTask.status
-      });
+        status: currentTask.status,
+      })
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type, currentTask]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, currentTask])
 
   const handleAssigneeChange = (assigneeId: number) => {
-    formik.setFieldValue('assigneeId', assigneeId);
-  };
+    formik.setFieldValue('assigneeId', assigneeId)
+  }
 
   const handlePriorityChange = (priority: string) => {
-    formik.setFieldValue('priority', priority);
-  };
+    formik.setFieldValue('priority', priority)
+  }
 
   const handleProjectChange = (projectId: number) => {
-    formik.setFieldValue('boardId', projectId);
-  };
+    formik.setFieldValue('boardId', projectId)
+  }
 
-  const {id} = useParams()
-  
-    useEffect(() => {
-      if (id && projects.length > 0) {
-        const project = projects.find((p) => String(p.id) === id); 
-        if (project) {
-          dispatch(setCurrentBoard(project)); 
-        } 
+  const { id } = useParams()
+
+  useEffect(() => {
+    if (id && projects.length > 0) {
+      const project = projects.find((p) => String(p.id) === id)
+      if (project) {
+        dispatch(setCurrentBoard(project))
       }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+  }, [id])
 
   return (
     <>
       <Modal isCentered isOpen={isOpen} onClose={onClose} size={'xl'}>
         <ModalOverlay />
         <ModalContent w={'800px'}>
-          <ModalHeader>{type === 'create' ? 'Создание задачи' : 'Редактирование задачи'}</ModalHeader>
+          <ModalHeader>
+            {type === 'create' ? 'Создание задачи' : 'Редактирование задачи'}
+          </ModalHeader>
           <chakra.form onSubmit={formik.handleSubmit} w={'100%'}>
             <ModalBody>
               <Flex flexDir={'column'} gap={'15px'}>
@@ -129,8 +134,9 @@ export const CreateTaskModal = ({
                       }}
                     >
                       {formik.values.assigneeId
-                        ? users.find((user) => user.id === formik.values.assigneeId)?.fullName ||
-                          'Выбранный пользователь'
+                        ? users.find(
+                            (user) => user.id === formik.values.assigneeId
+                          )?.fullName || 'Выбранный пользователь'
                         : 'Выберите исполнителя'}
                     </MenuButton>
                     <MenuList>
@@ -165,19 +171,26 @@ export const CreateTaskModal = ({
                       }}
                     >
                       {formik.values.priority
-                        ? formik.values.priority.charAt(0).toUpperCase() + formik.values.priority.slice(1)
+                        ? formik.values.priority.charAt(0).toUpperCase() +
+                          formik.values.priority.slice(1)
                         : 'Выберите приоритет'}
                     </MenuButton>
                     <MenuList>
-                      <MenuItem onClick={() => handlePriorityChange('Low')}>Низкий</MenuItem>
-                      <MenuItem onClick={() => handlePriorityChange('Medium')}>Средний</MenuItem>
-                      <MenuItem onClick={() => handlePriorityChange('High')}>Высокий</MenuItem>
+                      <MenuItem onClick={() => handlePriorityChange('Low')}>
+                        Низкий
+                      </MenuItem>
+                      <MenuItem onClick={() => handlePriorityChange('Medium')}>
+                        Средний
+                      </MenuItem>
+                      <MenuItem onClick={() => handlePriorityChange('High')}>
+                        Высокий
+                      </MenuItem>
                     </MenuList>
                   </Menu>
                 </FormControl>
 
                 <FormControl>
-                <Menu>
+                  <Menu>
                     <MenuButton
                       as={Button}
                       h={'32px'}
@@ -194,7 +207,8 @@ export const CreateTaskModal = ({
                         color: 'blue.600',
                       }}
                     >
-                      {projects.find((p) => p.id === formik.values.boardId)?.name || 'Выберите проект'}
+                      {projects.find((p) => p.id === formik.values.boardId)
+                        ?.name || 'Выберите проект'}
                     </MenuButton>
                     <MenuList>
                       {projects.map((project) => (
@@ -221,7 +235,7 @@ export const CreateTaskModal = ({
                           color={'blue.300'}
                           cursor={'pointer'}
                           onClick={() => {
-                            setDeadline(true);
+                            setDeadline(true)
                           }}
                         >
                           Указать
@@ -244,14 +258,18 @@ export const CreateTaskModal = ({
               </Flex>
             </ModalBody>
             <ModalFooter>
-              <Flex align={'center'} justifyContent={'space-between'} w={'100%'}>
+              <Flex
+                align={'center'}
+                justifyContent={'space-between'}
+                w={'100%'}
+              >
                 {type === 'edit' && isIssues && (
                   <Button
                     isDisabled={!formik.values.title.trim()}
                     type="button"
                     onClick={() => {
                       if (project) {
-                        navigate(`/board/${project.id}`);
+                        navigate(`/board/${project.id}`)
                       }
                     }}
                     w={'200px'}
@@ -259,16 +277,23 @@ export const CreateTaskModal = ({
                     Перейти на доску
                   </Button>
                 )}
-                <Flex align={'center'} gap={'20px'} w={'100%'} justifyContent={'flex-end'}>
+                <Flex
+                  align={'center'}
+                  gap={'20px'}
+                  w={'100%'}
+                  justifyContent={'flex-end'}
+                >
                   <Button onClick={onClose} variant="transparent">
                     Отмена
                   </Button>
                   <Button
-                  isDisabled={!formik.values.title.trim() || !formik.values.boardId}
-                  type="submit"
-                >
-                  {type === 'create' ? 'Создать' : 'Сохранить'}
-                </Button>
+                    isDisabled={
+                      !formik.values.title.trim() || !formik.values.boardId
+                    }
+                    type="submit"
+                  >
+                    {type === 'create' ? 'Создать' : 'Сохранить'}
+                  </Button>
                 </Flex>
               </Flex>
             </ModalFooter>
@@ -276,5 +301,5 @@ export const CreateTaskModal = ({
         </ModalContent>
       </Modal>
     </>
-  );
-};
+  )
+}

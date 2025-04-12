@@ -1,18 +1,18 @@
-import { Calendar } from 'shared/iconpack'; 
-import { Avatar, Box, Flex, Tag, Text, Timer } from '..';
-import { useDrag } from 'react-dnd';
+import { Calendar } from 'shared/iconpack'
+import { Avatar, Box, Flex, Tag, Text, Timer } from '..'
+import { useDrag } from 'react-dnd'
 
 interface TaskCardProps {
-  project: string;
-  openModal: () => void;
-  id: number;
-  title: string;
-  description: string;
-  deadline?: string;
-  priority: "Low" | "Medium" | "High";
+  project: string
+  openModal: () => void
+  id: number
+  title: string
+  description: string
+  deadline?: string
+  priority: 'Low' | 'Medium' | 'High'
   assignee: {
-    fullName: string;
-  };
+    fullName: string
+  }
 }
 
 export const TaskCard = ({
@@ -31,8 +31,7 @@ export const TaskCard = ({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }));
-  
+  }))
 
   return (
     <Flex
@@ -51,23 +50,27 @@ export const TaskCard = ({
     >
       <Flex justifyContent={'space-between'} alignItems={'center'}>
         <Flex align={'center'} gap={'5px'} justify={'flex-start'}>
-        <Text color={'mallow.400'} fontWeight={400}>
-          {project}
-        </Text>
-        </Flex>
-          <Text fontWeight={400} fontSize={'12px'} color={'mallow.400'}>
-            {'/main'}
+          <Text color={'mallow.400'} fontWeight={400}>
+            {project}
           </Text>
+        </Flex>
+        <Text fontWeight={400} fontSize={'12px'} color={'mallow.400'}>
+          {'/main'}
+        </Text>
       </Flex>
       <Text fontWeight={500} lineHeight={'20px'} fontSize={'17px'}>
         {title}
       </Text>
       <Box>
         <Text fontWeight={600} lineHeight={'17.75px'}>
-          {description.length > 130 ? `${description.slice(0, 130)}...` : description}
+          {description.length > 130
+            ? `${description.slice(0, 130)}...`
+            : description}
         </Text>
       </Box>
-      <Box h={'25px'}><Tag tag={priority} /></Box>
+      <Box h={'25px'}>
+        <Tag tag={priority} />
+      </Box>
       <Flex alignItems={'center'} justifyContent={'space-between'}>
         <Flex gap={'5px'} alignItems={'center'}>
           <Calendar />
@@ -82,7 +85,7 @@ export const TaskCard = ({
               color={'blue.300'}
               _hover={{ color: 'blue.600' }}
               onClick={(event) => {
-                event.stopPropagation();
+                event.stopPropagation()
               }}
             >
               Указать
@@ -90,15 +93,15 @@ export const TaskCard = ({
           )}
         </Flex>
         <Timer taskId={id.toString()} />
-          <Avatar
-            w={'28px'}
-            h={'28px'}
-            name={assignee.fullName}
-            size={'xs'}
-            bg={'mallow.300'}
-            color={'white'}
-          />
+        <Avatar
+          w={'28px'}
+          h={'28px'}
+          name={assignee.fullName}
+          size={'xs'}
+          bg={'mallow.300'}
+          color={'white'}
+        />
       </Flex>
     </Flex>
-  );
-};
+  )
+}

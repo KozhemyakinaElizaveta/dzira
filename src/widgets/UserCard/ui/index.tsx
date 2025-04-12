@@ -5,30 +5,30 @@ import { Avatar, Text, Box, Button, Flex, Input } from 'shared/ui'
 
 interface UserDataType {
   userData: {
-  user: string
-  username: string
-  position: string
-  name?: string
-  surname?: string
-  patronymic: string
+    user: string
+    username: string
+    position: string
+    name?: string
+    surname?: string
+    patronymic: string
   }
 }
 
-export const UserCard = ({userData}: UserDataType) => {
+export const UserCard = ({ userData }: UserDataType) => {
   const [data, setData] = useState({
     ...userData,
     name: userData.name || '',
     surname: userData.surname || '',
-    patronymic: userData.patronymic || ''
-  });
+    patronymic: userData.patronymic || '',
+  })
 
   useEffect(() => {
     setData({
       ...userData,
       name: userData.name || '',
-      surname: userData.surname || ''
-    });
-  }, [userData]);
+      surname: userData.surname || '',
+    })
+  }, [userData])
 
   const [isEditing, setIsEditing] = useState(false)
 
@@ -69,7 +69,7 @@ export const UserCard = ({userData}: UserDataType) => {
           {!isEditing ? (
             <>
               <Text fontWeight={700} fontSize="16px">
-              {`${data.name} ${data.surname}`}
+                {`${data.name} ${data.surname}`}
               </Text>
               <Text fontWeight={600} fontSize="14px">
                 @{data.username}

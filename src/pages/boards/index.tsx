@@ -2,9 +2,9 @@ import { Flex } from 'shared/ui'
 import { Boards } from 'widgets/index'
 
 const BoardsPage = () => {
-    return (
+  return (
     <Flex h="80vh" px="30px">
-      <Boards/>
+      <Boards />
     </Flex>
   )
 }

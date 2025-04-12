@@ -1,15 +1,15 @@
-import axios from 'axios';
+import axios from 'axios'
 
 const $api = axios.create({
-  responseType: 'json',   
-});
+  responseType: 'json',
+})
 
 /* == $API with response interceptors == */
 $api.interceptors.response.use(
   (config) => config,
   (error) => {
-    throw error;
+    throw error
   }
-);
+)
 
-export default $api;
+export default $api

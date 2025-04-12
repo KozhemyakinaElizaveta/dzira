@@ -5,7 +5,7 @@
 // import { getIcon } from 'shared/utils/getIcon';
 // import { IconButton } from '@chakra-ui/react';
 // import { EditText } from 'shared/iconpack';
-// import { updateProjectTitle } from 'entities/project/model/slice'; 
+// import { updateProjectTitle } from 'entities/project/model/slice';
 
 // export const ProjectEdit = () => {
 //   const dispatch = useDispatch();

@@ -1,85 +1,88 @@
-import { useToast } from "@chakra-ui/react";
-import { getProjects, createProject } from "entities/project/api"; 
-import { setBoards } from "entities/project/model/slice";
-import { Board } from "entities/project/model/types";
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useToast } from '@chakra-ui/react'
+import { getProjects, createProject } from 'entities/project/api'
+import { setBoards } from 'entities/project/model/slice'
+import { Board } from 'entities/project/model/types'
+import { useEffect, useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 export const useBoards = () => {
-  const toast = useToast();
-  const [projectsData, setProjectsData] = useState<Board[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const dispatch = useDispatch();
+  const toast = useToast()
+  const [projectsData, setProjectsData] = useState<Board[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    setIsLoading(true);
+    setIsLoading(true)
     getProjects()
       .then((response) => {
-        setProjectsData(response.data.data);
-        dispatch(setBoards(response.data.data)); 
+        setProjectsData(response.data.data)
+        dispatch(setBoards(response.data.data))
       })
       .catch(() => {
         toast({
-          position: "bottom-right",
-          title: "Ошибка",
-          description: "Не удалось получить проекты",
-          status: "error",
+          position: 'bottom-right',
+          title: 'Ошибка',
+          description: 'Не удалось получить проекты',
+          status: 'error',
           duration: 9000,
           isClosable: true,
-          variant: "top-accent",
-        });
+          variant: 'top-accent',
+        })
       })
       .finally(() => {
-        setIsLoading(false);
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+        setIsLoading(false)
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  const createNewProject = async (projectData: { name: string; description?: string }) => {
+  const createNewProject = async (projectData: {
+    name: string
+    description?: string
+  }) => {
     try {
-      setIsLoading(true); 
-      const response = await createProject(projectData);
+      setIsLoading(true)
+      const response = await createProject(projectData)
 
       setProjectsData((prevProjects) => [
         ...prevProjects,
         {
           id: response.data.id,
           name: projectData.name,
-          description: projectData.description || "",
-          taskCount: 0, 
+          description: projectData.description || '',
+          taskCount: 0,
         },
-      ]);
+      ])
 
       toast({
-        position: "bottom-right",
-        title: "Успех",
-        description: "Проект успешно создан",
-        status: "success",
+        position: 'bottom-right',
+        title: 'Успех',
+        description: 'Проект успешно создан',
+        status: 'success',
         duration: 5000,
         isClosable: true,
-        variant: "top-accent",
-      });
+        variant: 'top-accent',
+      })
     } catch {
       toast({
-        position: "bottom-right",
-        title: "Ошибка",
-        description: "Не удалось создать проект",
-        status: "error",
+        position: 'bottom-right',
+        title: 'Ошибка',
+        description: 'Не удалось создать проект',
+        status: 'error',
         duration: 9000,
         isClosable: true,
-        variant: "top-accent",
-      });
+        variant: 'top-accent',
+      })
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false)
     }
-  };
+  }
 
   const data = useMemo(() => {
     if (!projectsData || projectsData.length === 0) {
       return {
         totalProjects: 0,
         projects: [],
-      };
+      }
     }
     return {
       totalProjects: projectsData.length,
@@ -89,12 +92,12 @@ export const useBoards = () => {
         description: project.description,
         taskCount: project.taskCount,
       })),
-    };
-  }, [projectsData]);
+    }
+  }, [projectsData])
 
   return {
     ...data,
     isLoading,
-    createNewProject, 
-  };
-};
+    createNewProject,
+  }
+}
