@@ -18,6 +18,7 @@ export interface CreateTaskRequest {
   priority?: 'Low' | 'Medium' | 'High'
   title: string
   status: 'Backlog' | 'InProgress' | 'Done'
+  taskId?: number
 }
 
 export interface UpdateTaskRequest extends CreateTaskRequest {
@@ -238,6 +239,7 @@ export const useCreateForm = (
       deadline: '',
       errorOccurred: false,
       status: 'Backlog',
+      taskId: undefined,
     },
     validate,
     onSubmit: (values) => {

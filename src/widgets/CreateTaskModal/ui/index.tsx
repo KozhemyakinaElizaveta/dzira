@@ -42,13 +42,15 @@ export const CreateTaskModal = ({
   const dispatch = useDispatch()
   const isIssues = useMatch('/issues')
 
-  const { formik, users, projects } = useCreateForm(type, onClose, project?.id)
   const currentTask = useSelector(selectCurrentTask)
   const currentProject = useSelector(selectCurrentBoard)
+
+  const { formik, users, projects } = useCreateForm(type, onClose, currentTask?.id)
 
   useEffect(() => {
     if (type === 'edit' && currentTask && currentProject) {
       formik.setValues({
+        taskId: currentTask.id,
         title: currentTask.title,
         description: currentTask.description,
         boardId: currentProject.id,
