@@ -52,9 +52,11 @@ export const Boards = () => {
               </Flex>
             ))
           ) : (
-            <Text color="gray.500" textAlign="center" fontSize="24px">
-              Нет доступных проектов
-            </Text>
+            <Flex w={'100%'} h={'100%'} align={'center'} justify={'center'}>
+              <Text color="gray.500" textAlign="center" fontSize="24px">
+                Нет доступных проектов
+              </Text>
+            </Flex>
           )}
         </Flex>
       )}

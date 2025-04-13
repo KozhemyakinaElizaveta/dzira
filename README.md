@@ -12,6 +12,8 @@
 
 Dzira разработана на основе React с использованием TypeScript и архитектуры Feature-Sliced Design (FSD), что обеспечивает масштабируемость и поддерживаемость кода.
 
+Сервер доступен по [ссылке](https://github.com/avito-tech/tech-internship/tree/main/Tech%20Internships/Frontend/Frontend-trainee-assignment-spring-2025/server).
+
 ---
 
 ### Технологии
@@ -41,7 +43,7 @@ Dzira разработана на основе React с использовани
 1. Склонируйте репозиторий:
 
    ```bash
-   git clone https://github.com/your-username/dzira.git
+   git clone https://github.com/KozhemyakinaElizaveta/dzira.git
    cd dzira
    ```
 
@@ -72,6 +74,20 @@ Dzira разработана на основе React с использовани
 
 ---
 
+### Управление Docker-контейнером
+
+1. Соберите и запустите контейнер:
+
+     ```bash
+   docker-compose up --build
+   ```
+
+2. После сборки приложение будет доступно:
+
+    Фронтенд: http://localhost:5173
+
+---
+
 ### Конфигурация Vite
 
 Ваш проект использует **Vite** для сборки с конфигурацией, настроенной на использование React, TypeScript и поддержки путей через `tsconfig`:
@@ -85,6 +101,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 export default defineConfig({
   plugins: [react(), eslint(), tsconfigPaths()],
   server: {
+    host: true,
     port: 5173,
     open: 'http://localhost:5173/',
     proxy: {
